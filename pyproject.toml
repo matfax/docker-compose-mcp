@@ -8,6 +8,7 @@ version = "0.1.0"
 description = "MCP server that auto-starts Docker Compose services and provides monitoring tools"
 readme = "README.md"
 license = "LGPL-3.0-or-later"
+requires-python = ">=3.11"
 authors = [
     {name = "Matthias Fax", email = "mat@fax.fyi"},
 ]
@@ -69,7 +70,6 @@ dev = [
     "pytest-mock>=3.14.1",
     "ruff>=0.8.0",
     "mypy>=1.13.0",
-    "black>=24.0.0",
     "types-docker>=7.0.0",
     "bandit>=1.7.0",
 ]
@@ -111,11 +111,6 @@ quote-style = "double"
 indent-style = "space"
 line-ending = "auto"
 
-# Black configuration
-[tool.black]
-line-length = 100
-include = "\\.pyi?$"
-extend-exclude = "/tests/fixtures/"
 
 # MyPy configuration
 [tool.mypy]
