@@ -8,7 +8,6 @@ version = "0.1.0"
 description = "MCP server that auto-starts Docker Compose services and provides monitoring tools"
 readme = "README.md"
 license = "LGPL-3.0-or-later"
-requires-python = ">=3.11"
 authors = [
     {name = "Matthias Fax", email = "mat@fax.fyi"},
 ]
@@ -18,10 +17,7 @@ classifiers = [
     "Intended Audience :: Developers",
     "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
-    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3 :: Only",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: System :: Systems Administration",
 ]
@@ -80,7 +76,6 @@ dev = [
 
 # Ruff configuration
 [tool.ruff]
-target-version = "py311"
 line-length = 100
 extend-exclude = ["tests/fixtures/**"]
 
@@ -119,13 +114,11 @@ line-ending = "auto"
 # Black configuration
 [tool.black]
 line-length = 100
-target-version = ["py311", "py312", "py313"]
 include = "\\.pyi?$"
 extend-exclude = "/tests/fixtures/"
 
 # MyPy configuration
 [tool.mypy]
-python_version = "3.11"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true

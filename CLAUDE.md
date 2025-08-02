@@ -97,7 +97,7 @@ tests/
 
 ## Configuration
 
-- **Python Version**: Requires Python 3.11+
+- **Python Version**: See `.python-version` file for required version
 - **Dependencies**: Uses `uv` for dependency management, configured in `pyproject.toml`
 - **Docker**: Requires Docker and Docker Compose to be installed and accessible
 - **Environment**: Loads variables from `docker.env` file in target project directory

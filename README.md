@@ -1,6 +1,6 @@
 # Docker Compose MCP Server
 
-![Python](https://img.shields.io/badge/python-3.11+-blue.svg)
+![Python](https://img.shields.io/badge/python-3+-blue.svg)
 ![License](https://img.shields.io/badge/license-LGPL%203+-green.svg)
 ![Docker](https://img.shields.io/badge/docker-compose-blue.svg)
 
@@ -36,7 +36,7 @@ uv sync --dev
 uv run docker-compose-mcp /path/to/project
 ```
 
-**Requirements**: Python 3.11+, Docker, Docker Compose, uv
+**Requirements**: Python (see .python-version), Docker, Docker Compose, uv
 
 ## CLI Options
 
