@@ -1,0 +1,154 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "docker-compose-mcp"
+version = "0.1.0"
+description = "MCP server that auto-starts Docker Compose services and provides monitoring tools"
+readme = "README.md"
+license = "LGPL-3.0-or-later"
+requires-python = ">=3.11"
+authors = [
+    {name = "Matthias Fax", email = "mat@fax.fyi"},
+]
+keywords = ["mcp", "docker", "docker-compose", "server", "lifecycle"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Systems Administration",
+]
+
+dependencies = [
+    "mcp>=1.0.0",
+    "docker>=7.0.0",
+    "python-dotenv>=1.0.0",
+]
+
+
+[project.urls]
+Homepage = "https://github.com/matfax/docker-compose-mcp"
+Repository = "https://github.com/matfax/docker-compose-mcp.git"
+Issues = "https://github.com/matfax/docker-compose-mcp/issues"
+
+[project.scripts]
+docker-compose-mcp = "docker_compose_mcp:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["docker_compose_mcp"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v --cov=docker_compose_mcp --cov-report=term-missing"
+asyncio_mode = "auto"
+markers = [
+    "integration: marks tests as integration tests requiring external dependencies",
+]
+
+[tool.coverage.run]
+source = ["docker_compose_mcp"]
+omit = ["tests/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+]
+
+[dependency-groups]
+dev = [
+    "mcp-use>=1.3.7",
+    "pytest>=8.4.1",
+    "pytest-asyncio>=1.1.0",
+    "pytest-cov>=6.2.1",
+    "pytest-mock>=3.14.1",
+    "ruff>=0.8.0",
+    "mypy>=1.13.0",
+    "black>=24.0.0",
+    "types-docker>=7.0.0",
+    "bandit>=1.7.0",
+]
+
+# Ruff configuration
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+extend-exclude = ["tests/fixtures/**"]
+
+[tool.ruff.lint]
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+    "C4", # flake8-comprehensions
+    "UP", # pyupgrade
+    "N",  # pep8-naming
+    "S",  # bandit security
+    "T20", # flake8-print
+    "SIM", # flake8-simplify
+    "PIE", # flake8-pie
+    "RET", # flake8-return
+    "RSE", # flake8-raise
+    "ICN", # flake8-import-conventions
+]
+ignore = [
+    "S101",  # Use of assert
+    "S603",  # subprocess call: check for execution of untrusted input
+    "S607",  # Starting a process with a partial executable path
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "T20"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+
+# Black configuration
+[tool.black]
+line-length = 100
+target-version = ["py311", "py312", "py313"]
+include = "\\.pyi?$"
+extend-exclude = "/tests/fixtures/"
+
+# MyPy configuration
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+show_error_codes = true
+
+[[tool.mypy.overrides]]
+module = ["docker.*", "mcp.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "docker_compose_mcp"
+disallow_untyped_decorators = false  # Allow untyped decorators from MCP library
+
+# Bandit configuration  
+[tool.bandit]
+exclude_dirs = ["tests"]
+skips = ["B101"]  # Skip assert_used test

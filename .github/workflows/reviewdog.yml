@@ -1,0 +1,130 @@
+name: Code Review with ReviewDog
+
+on:
+  pull_request:
+    branches: [ master, main ]
+
+env:
+  PYTHONUNBUFFERED: "1"
+  FORCE_COLOR: "1"
+
+jobs:
+  reviewdog:
+    name: ReviewDog Code Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      checks: write
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v4
+      with:
+        version: "latest"
+
+    - name: Install dependencies
+      run: |
+        uv sync --dev
+
+    # Ruff linting with reviewdog
+    - name: Run Ruff with ReviewDog
+      uses: reviewdog/action-ruff@v1
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        reporter: github-pr-review
+        level: error
+        filter_mode: nofilter
+        fail_on_error: true
+        ruff_flags: "--config=pyproject.toml"
+
+    # MyPy type checking with reviewdog
+    - name: Run MyPy with ReviewDog
+      uses: tsuyoshicho/action-mypy@v4
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        reporter: github-pr-review
+        level: error
+        filter_mode: nofilter
+        fail_on_error: false
+        execute_command: "uv run mypy docker_compose_mcp/"
+
+    # Bandit security analysis with reviewdog
+    - name: Run Bandit Security Analysis
+      run: |
+        uv run bandit -r docker_compose_mcp/ -f json -o bandit-results.json || true
+        uv run bandit -r docker_compose_mcp/ -f txt > bandit-results.txt || true
+
+    - name: ReviewDog - Bandit
+      uses: reviewdog/action-setup@v1
+      with:
+        reviewdog_version: latest
+
+    - name: Run Bandit with ReviewDog
+      env:
+        REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        if [ -s bandit-results.txt ]; then
+          cat bandit-results.txt | reviewdog -f=rdjson -name="bandit" -reporter=github-pr-review -level=warning
+        fi
+
+    # Use Vorpal GitHub Action for comprehensive review
+    - name: Vorpal Code Review
+      uses: marketplace/actions/vorpal-github-action-with-reviewdog@v1
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        reporter: github-pr-review
+        level: info
+        filter_mode: nofilter
+        # Vorpal will automatically detect and run appropriate Python tools
+        language: "python"
+        fail_on_error: false
+
+    # Black formatting check with reviewdog
+    - name: Run Black Formatting Check
+      run: |
+        uv run black --check --diff docker_compose_mcp/ tests/ > black-results.txt 2>&1 || true
+
+    - name: ReviewDog - Black Formatting
+      env:
+        REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        if [ -s black-results.txt ]; then
+          cat black-results.txt | reviewdog -f=diff -name="black" -reporter=github-pr-review -level=info
+        fi
+
+    # pytest with coverage reporting
+    - name: Run Tests with Coverage
+      run: |
+        uv run pytest --cov=docker_compose_mcp --cov-report=json --cov-report=term-missing tests/ > test-results.txt 2>&1 || true
+
+    - name: ReviewDog - Test Coverage
+      env:
+        REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        if [ -s test-results.txt ]; then
+          grep -E "(FAILED|ERROR|warnings summary)" test-results.txt | reviewdog -f=rdjson -name="pytest" -reporter=github-pr-review -level=warning || true
+        fi
+
+    # Upload artifacts for debugging
+    - name: Upload analysis results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: reviewdog-analysis-results
+        path: |
+          bandit-results.json
+          bandit-results.txt
+          black-results.txt
+          test-results.txt
+          coverage.json
