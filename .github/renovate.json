@@ -6,9 +6,6 @@
     ":semanticPrefixFixDepsChoreOthers",
     ":ignoreModulesAndTests"
   ],
-  "uv": {
-    "enabled": true
-  },
   "lockFileMaintenance": {
     "enabled": true,
     "automerge": true
