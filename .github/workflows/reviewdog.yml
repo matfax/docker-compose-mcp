@@ -4,13 +4,9 @@ on:
   pull_request:
     branches: [ master, main ]
 
-env:
-  PYTHONUNBUFFERED: "1"
-  FORCE_COLOR: "1"
-
 jobs:
-  reviewdog:
-    name: ReviewDog Code Analysis
+  vorpal:
+    name: Vorpal Security Review
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -20,111 +16,11 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-      with:
-        fetch-depth: 0
 
-    - name: Set up Python
-      uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+    - name: Vorpal Security Code Review
+      uses: checkmarx/vorpal-reviewdog-github-action@v1.0.0
       with:
-        python-version-file: '.python-version'
-
-    - name: Install uv
-      uses: astral-sh/setup-uv@38f3f104447c67c051c4a08e39b64a148898af3a # v4
-      with:
-        version: "latest"
-
-    - name: Install dependencies
-      run: |
-        uv sync --dev
-
-    # Ruff linting with reviewdog
-    - name: Run Ruff with ReviewDog
-      uses: reviewdog/action-ruff@v1 # Note: Use with caution due to past security issues
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        level: warning
         reporter: github-pr-review
-        level: error
-        filter_mode: nofilter
+        filter_mode: diff_context
         fail_on_error: true
-        ruff_flags: "--config=pyproject.toml"
-
-    # MyPy type checking with reviewdog
-    - name: Run MyPy with ReviewDog
-      uses: tsuyoshicho/action-mypy@050cafc4025598bdcd5ce9b0cc4f6007b7b25ad9 # v4.1.0
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        reporter: github-pr-review
-        level: error
-        filter_mode: nofilter
-        fail_on_error: false
-        execute_command: "uv run mypy docker_compose_mcp/"
-
-    # Bandit security analysis with reviewdog
-    - name: Run Bandit Security Analysis
-      run: |
-        uv run bandit -r docker_compose_mcp/ -f json -o bandit-results.json || true
-        uv run bandit -r docker_compose_mcp/ -f txt > bandit-results.txt || true
-
-    - name: ReviewDog - Bandit
-      uses: reviewdog/action-setup@v1 # Note: Use with caution due to past security issues
-      with:
-        reviewdog_version: latest
-
-    - name: Run Bandit with ReviewDog
-      env:
-        REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        if [ -s bandit-results.txt ]; then
-          cat bandit-results.txt | reviewdog -f=rdjson -name="bandit" -reporter=github-pr-review -level=warning
-        fi
-
-    # Use Vorpal GitHub Action for comprehensive review
-    - name: Vorpal Code Review
-      uses: marketplace/actions/vorpal-github-action-with-reviewdog@v1 # Note: Marketplace action, pin if available
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        reporter: github-pr-review
-        level: info
-        filter_mode: nofilter
-        # Vorpal will automatically detect and run appropriate Python tools
-        language: "python"
-        fail_on_error: false
-
-    # Black formatting check with reviewdog
-    - name: Run Black Formatting Check
-      run: |
-        uv run black --check --diff docker_compose_mcp/ tests/ > black-results.txt 2>&1 || true
-
-    - name: ReviewDog - Black Formatting
-      env:
-        REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        if [ -s black-results.txt ]; then
-          cat black-results.txt | reviewdog -f=diff -name="black" -reporter=github-pr-review -level=info
-        fi
-
-    # pytest with coverage reporting
-    - name: Run Tests with Coverage
-      run: |
-        uv run pytest --cov=docker_compose_mcp --cov-report=json --cov-report=term-missing tests/ > test-results.txt 2>&1 || true
-
-    - name: ReviewDog - Test Coverage
-      env:
-        REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        if [ -s test-results.txt ]; then
-          grep -E "(FAILED|ERROR|warnings summary)" test-results.txt | reviewdog -f=rdjson -name="pytest" -reporter=github-pr-review -level=warning || true
-        fi
-
-    # Upload artifacts for debugging
-    - name: Upload analysis results
-      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-      if: always()
-      with:
-        name: reviewdog-analysis-results
-        path: |
-          bandit-results.json
-          bandit-results.txt
-          black-results.txt
-          test-results.txt
-          coverage.json
