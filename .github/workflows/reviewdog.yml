@@ -2,7 +2,9 @@ name: Code Review with ReviewDog
 
 on:
   pull_request:
-    branches: [ master, main ]
+    branches: [ main ]
+  push:
+    branches: [ main ]
 
 jobs:
   vorpal:
