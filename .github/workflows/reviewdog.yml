@@ -6,11 +6,6 @@ on:
   push:
     branches: [ main ]
 
-permissions:
-  contents: read
-  pull-requests: write
-  checks: write
-
 jobs:
   vorpal:
     name: Vorpal Security Review
@@ -22,10 +17,10 @@ jobs:
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
     - name: Vorpal Security Code Review
-      uses: checkmarx/vorpal-reviewdog-github-action@v1.0.0
+      uses: checkmarx/vorpal-reviewdog-github-action@8cc292ff48b7b0c94de87be0cbd5a5b50c5bbf8c # v1.2.0
       with:
         level: warning
         reporter: github-pr-review

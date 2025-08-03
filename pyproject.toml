@@ -139,4 +139,3 @@ disallow_untyped_decorators = false  # Allow untyped decorators from MCP library
 # Bandit configuration  
 [tool.bandit]
 exclude_dirs = ["tests"]
-skips = ["B101"]  # Skip assert_used test

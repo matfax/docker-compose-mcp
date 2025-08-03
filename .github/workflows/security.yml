@@ -19,14 +19,13 @@ jobs:
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
     - name: Run Bandit Security Analysis
-      uses: brunohaf/action-bandit@a7ca89e99fa9ff26ce8b0b8fcead6b9d3e84ca36 # v1.2.1
+      uses: brunohaf/action-bandit@52689a1c55fcb36754b0d7c95dceb5a60a49f36b # v1.2.1
       with:
         bandit_config: pyproject.toml
         reporter: github-pr-review
         level: warning
-        fail_on_error: false
-        tool_name: bandit-security
-        filter_mode: added
+        fail_on_error: true
+        filter_mode: diff_context
