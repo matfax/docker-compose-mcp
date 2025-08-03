@@ -46,7 +46,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
-      
+
     strategy:
       matrix:
         python-version: ['3.11', '3.12', '3.13']
@@ -111,7 +111,7 @@ jobs:
       run: uv sync --dev
 
     - name: Run tests with coverage
-      run: uv run pytest --cov=./ --cov-report=xml
+      run: uv run pytest --cov=docker_compose_mcp --cov-report=xml
         
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@18283e04ce6e62d37312384ff67231eb8fd56d24 # v5.4.3
