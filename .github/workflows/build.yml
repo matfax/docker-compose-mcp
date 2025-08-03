@@ -108,12 +108,19 @@ jobs:
       run: uv run pytest tests/test_mcp_integration.py::TestRealDockerIntegration -v -m integration
         
     - name: Generate coverage report
-      run: uv run pytest --cov=docker_compose_mcp --cov-report=xml --cov-report=term-missing
+      run: uv run pytest --cov=docker_compose_mcp --cov-report=xml --cov-report=term-missing --junitxml=junit.xml -o junit_family=legacy
       if: matrix.python-version == '3.13'
         
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@18283e04ce6e62d37312384ff67231eb8fd56d24 # v5.4.3
       if: matrix.python-version == '3.13'
+      with:
+        fail_ci_if_error: true
+        use_oidc: true
+
+    - name: Upload test results
+      if: !cancelled() && matrix.python-version == '3.13'
+      uses: codecov/test-results-action@v1.1.1
       with:
         fail_ci_if_error: true
         use_oidc: true
