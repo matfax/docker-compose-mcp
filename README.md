@@ -2,6 +2,7 @@
 [![Build and Test](https://github.com/matfax/docker-compose-mcp/actions/workflows/build.yml/badge.svg)](https://github.com/matfax/docker-compose-mcp/actions/workflows/build.yml)
 ![Python](https://img.shields.io/badge/python-3-11-blue.svg)
 ![Docker](https://img.shields.io/badge/docker-compose-blue.svg)
+[![ReviewDog](https://github.com/matfax/docker-compose-mcp/actions/workflows/reviewdog.yml/badge.svg?branch=main&event=push)](https://github.com/matfax/docker-compose-mcp/actions/workflows/reviewdog.yml?query=workflow%3Areviewdog+event%3Apush+branch%3Amain)
 [![DeepSource](https://app.deepsource.com/gh/matfax/docker-compose-mcp.svg/?label=code+coverage&show_trend=true&token=8MocmlDi3f89SI7lmEmk1Kjc)](https://app.deepsource.com/gh/matfax/docker-compose-mcp/)
 [![DeepSource](https://app.deepsource.com/gh/matfax/docker-compose-mcp.svg/?label=active+issues&show_trend=true&token=8MocmlDi3f89SI7lmEmk1Kjc)](https://app.deepsource.com/gh/matfax/docker-compose-mcp/)
 [![DeepSource](https://app.deepsource.com/gh/matfax/docker-compose-mcp.svg/?label=resolved+issues&show_trend=true&token=8MocmlDi3f89SI7lmEmk1Kjc)](https://app.deepsource.com/gh/matfax/docker-compose-mcp/)

@@ -23,7 +23,7 @@ jobs:
       uses: brunohaf/action-bandit@52689a12ef6e1a03cfc46991158742ad271bc84e # v1.2.1
       with:
         bandit_config: pyproject.toml
-        reporter: github-pr-review
+        reporter: ${{ github.event_name == 'pull_request' && 'github-pr-review' || 'github-check' }}
         level: warning
         fail_on_error: true
         filter_mode: diff_context
@@ -38,7 +38,7 @@ jobs:
 
       - uses: jordemort/action-pyright@v1
         with:
-          reporter: github-pr-review
+          reporter: ${{ github.event_name == 'pull_request' && 'github-pr-review' || 'github-check' }}
           level: warning
           fail_on_error: true
           filter_mode: diff_context
@@ -54,7 +54,7 @@ jobs:
 
       - uses: benny123tw/action-ruff@226d241bdf7205e6e048f1407d21bd69a64b7298 # v1.1.0
         with:
-          reporter: github-pr-review
+          reporter: ${{ github.event_name == 'pull_request' && 'github-pr-review' || 'github-check' }}
           level: warning
           fail_level: warning
           filter_mode: diff_context
