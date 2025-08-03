@@ -105,15 +105,12 @@ jobs:
         
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@18283e04ce6e62d37312384ff67231eb8fd56d24 # v5.4.3
-      if: !cancelled()
       with:
         fail_ci_if_error: true
         use_oidc: true
 
     - name: Upload test results
-      if: !cancelled()
       uses: codecov/test-results-action@v1.1.1
       with:
         fail_ci_if_error: true
         use_oidc: true
-        
