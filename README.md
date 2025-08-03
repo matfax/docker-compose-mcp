@@ -1,8 +1,9 @@
 # Docker Compose MCP Server
-
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/matfax/docker-compose-mcp/build)
 ![Python](https://img.shields.io/badge/python-3+-blue.svg)
-![License](https://img.shields.io/badge/license-LGPL%203+-green.svg)
 ![Docker](https://img.shields.io/badge/docker-compose-blue.svg)
+[![codecov](https://codecov.io/github/matfax/docker-compose-mcp/graph/badge.svg?token=Unk8q9CVVI)](https://codecov.io/github/matfax/docker-compose-mcp)
+![License](https://img.shields.io/badge/license-LGPL%203+-green.svg)
 
 MCP server that provides lifecycle management for Docker Compose services with automatic startup, status monitoring, and graceful shutdown.
 
