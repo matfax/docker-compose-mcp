@@ -49,26 +49,20 @@ uv run ruff format .
 # Check formatting
 uv run ruff format --check .
 
-# Type checking with MyPy
-uv run mypy docker_compose_mcp/
+# Type checking with Pyright
+uv run pyright docker_compose_mcp/
 
 # Security scanning with Bandit
 uv run bandit -r docker_compose_mcp/
-
-# Format with Black
-uv run black docker_compose_mcp/ tests/
-
-# Check Black formatting
-uv run black --check --diff docker_compose_mcp/ tests/
 ```
 
 ## Architecture
 
 ### Core Components
 
-- **`DockerComposeManager`** (`docker_compose_mcp/__init__.py:39-287`): Main class handling Docker Compose operations with security validation and error handling
-- **MCP Server Setup** (`docker_compose_mcp/__init__.py:289-388`): MCP server with three tools for compose management
-- **Signal Handling** (`docker_compose_mcp/__init__.py:439-488`): Graceful shutdown handling
+- **`DockerComposeManager`**: Main class handling Docker Compose operations with security validation and error handling
+- **MCP Server Setup**: MCP server with three tools for compose management
+- **Signal Handling**: Graceful shutdown handling
 
 ### Key Features
 
