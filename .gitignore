@@ -66,3 +66,4 @@ logs/
 # Coverage
 .coverage
 .coverage.*
+coverage.*
