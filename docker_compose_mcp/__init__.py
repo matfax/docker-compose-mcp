@@ -76,8 +76,8 @@ class DockerComposeManager:
             self.docker_client = docker.from_env()
             # Test Docker connection
             self.docker_client.ping()
-        except Exception as e:
-            raise DockerComposeError(f"Failed to initialize Docker client: {e}") from e
+        except Exception as docker_error:
+            raise DockerComposeError(f"Failed to initialize Docker client: {docker_error}") from docker_error
 
         # Load environment variables from project directory
         env_file = self.project_dir / "docker.env"
@@ -85,8 +85,8 @@ class DockerComposeManager:
             try:
                 load_dotenv(env_file)
                 logger.info(f"Loaded environment from {env_file}")
-            except Exception as e:
-                logger.warning(f"Failed to load environment from {env_file}: {e}")
+            except Exception as env_error:
+                logger.warning(f"Failed to load environment from {env_file}: {env_error}")
 
     def _run_compose_command(
         self, command: list[str], timeout: float = 60.0
@@ -131,16 +131,16 @@ class DockerComposeManager:
                 timeout=timeout,
                 env=dict(os.environ),  # Use clean environment copy
             )
-        except subprocess.TimeoutExpired as e:
+        except subprocess.TimeoutExpired as timeout_error:
             raise DockerComposeError(
                 f"Command timed out after {timeout}s: {' '.join(command)}"
-            ) from e
-        except subprocess.CalledProcessError as e:
+            ) from timeout_error
+        except subprocess.CalledProcessError as called_process_error:
             raise DockerComposeError(
-                f"Command failed: {e.stderr or e.stdout or 'Unknown error'}"
-            ) from e
-        except Exception as e:
-            raise DockerComposeError(f"Unexpected error running command: {e}") from e
+                f"Command failed: {called_process_error.stderr or called_process_error.stdout or 'Unknown error'}"
+            ) from called_process_error
+        except Exception as run_error:
+            raise DockerComposeError(f"Unexpected error running command: {run_error}") from run_error
 
     def start_compose(self) -> bool:
         """Start Docker Compose services.
@@ -153,8 +153,8 @@ class DockerComposeManager:
             result = self._run_compose_command(["docker", "compose", "up", "-d"])
             logger.info(f"Docker Compose started successfully: {result.stdout.strip()}")
             return True
-        except DockerComposeError as e:
-            logger.error(f"Failed to start Docker Compose: {e}")
+        except DockerComposeError as start_error:
+            logger.error(f"Failed to start Docker Compose: {start_error}")
             return False
 
     def stop_compose(self) -> bool:
@@ -168,8 +168,8 @@ class DockerComposeManager:
             result = self._run_compose_command(["docker", "compose", "down"])
             logger.info(f"Docker Compose stopped successfully: {result.stdout.strip()}")
             return True
-        except DockerComposeError as e:
-            logger.error(f"Failed to stop Docker Compose: {e}")
+        except DockerComposeError as stop_error:
+            logger.error(f"Failed to stop Docker Compose: {stop_error}")
             return False
 
     def get_compose_status(self) -> dict[str, Any]:
@@ -197,14 +197,14 @@ class DockerComposeManager:
                     if line:
                         try:
                             services_info.append(json.loads(line))
-                        except json.JSONDecodeError as e:
-                            logger.warning(f"Failed to parse service JSON: {line} - {e}")
+                        except json.JSONDecodeError as json_error:
+                            logger.warning(f"Failed to parse service JSON: {line} - {json_error}")
 
             base_status["services"] = services_info
 
-        except DockerComposeError as e:
-            logger.error(f"Failed to get compose status: {e}")
-            base_status["error"] = str(e)
+        except DockerComposeError as status_error:
+            logger.error(f"Failed to get compose status: {status_error}")
+            base_status["error"] = str(status_error)
 
         # Get container health status
         try:
@@ -228,8 +228,8 @@ class DockerComposeManager:
                     )
             base_status["containers"] = containers
 
-        except Exception as e:
-            logger.warning(f"Could not get container details: {e}")
+        except Exception as container_error:
+            logger.warning(f"Could not get container details: {container_error}")
 
         return base_status
 
@@ -262,9 +262,9 @@ class DockerComposeManager:
 
             result = self._run_compose_command(cmd)
             return result.stdout
-        except DockerComposeError as e:
-            logger.error(f"Failed to get compose logs: {e}")
-            return f"Error getting logs: {e}"
+        except DockerComposeError as logs_error:
+            logger.error(f"Failed to get compose logs: {logs_error}")
+            return f"Error getting logs: {logs_error}"
 
     def restart_compose(self) -> bool:
         """Restart Docker Compose services.
@@ -277,8 +277,8 @@ class DockerComposeManager:
             result = self._run_compose_command(["docker", "compose", "restart"])
             logger.info(f"Docker Compose restarted successfully: {result.stdout.strip()}")
             return True
-        except DockerComposeError as e:
-            logger.error(f"Failed to restart Docker Compose: {e}")
+        except DockerComposeError as restart_error:
+            logger.error(f"Failed to restart Docker Compose: {restart_error}")
             return False
 
 
@@ -378,9 +378,9 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> list[TextContent]:
 
         raise ValueError(f"Unknown tool: {name}")
 
-    except Exception as e:
-        logger.error(f"Error executing tool '{name}': {e}")
-        return [TextContent(type="text", text=f"Error executing tool '{name}': {e}")]
+    except Exception as tool_error:
+        logger.error(f"Error executing tool '{name}': {tool_error}")
+        return [TextContent(type="text", text=f"Error executing tool '{name}': {tool_error}")]
 
 
 def format_status_output(status: dict[str, Any]) -> str:
@@ -447,8 +447,8 @@ def startup_hook() -> None:
             logger.warning("Failed to start Docker Compose on startup")
         else:
             logger.info("Docker Compose started successfully on startup")
-    except Exception as e:
-        logger.error(f"Unexpected error during startup: {e}")
+    except Exception as startup_hook_error:
+        logger.error(f"Unexpected error during startup: {startup_hook_error}")
         raise
 
 
@@ -464,8 +464,8 @@ def shutdown_hook() -> None:
             logger.warning("Failed to stop Docker Compose on shutdown")
         else:
             logger.info("Docker Compose stopped successfully on shutdown")
-    except Exception as e:
-        logger.error(f"Error during shutdown: {e}")
+    except Exception as shutdown_error:
+        logger.error(f"Error during shutdown: {shutdown_error}")
 
 
 def signal_handler(signum: int, frame: Any) -> None:
@@ -478,8 +478,8 @@ def signal_handler(signum: int, frame: Any) -> None:
     logger.info(f"Received signal {signum}, shutting down gracefully...")
     try:
         shutdown_hook()
-    except Exception as e:
-        logger.error(f"Error during signal handling: {e}")
+    except Exception as signal_error:
+        logger.error(f"Error during signal handling: {signal_error}")
     finally:
         sys.exit(0)
 
@@ -529,13 +529,13 @@ async def main() -> None:
     # Parse command line arguments
     try:
         args = parse_args()
-    except Exception as e:
-        logger.error(f"Failed to parse arguments: {e}")
+    except Exception as parse_error:
+        logger.error(f"Failed to parse arguments: {parse_error}")
         sys.exit(1)
 
     # Configure logging based on debug flag and log level
     log_level = getattr(logging, args.log_level, logging.INFO)
-    
+
     if args.debug:
         # Enable stderr logging for debug mode
         logging.basicConfig(
@@ -553,7 +553,7 @@ async def main() -> None:
             handlers=[logging.NullHandler()],
             force=True,
         )
-    
+
     logging.getLogger().setLevel(log_level)
 
     # Initialize compose manager
@@ -562,14 +562,14 @@ async def main() -> None:
         logger.info(
             f"Initialized Docker Compose manager for project: {compose_manager.project_name}"
         )
-    except (FileNotFoundError, NotADirectoryError) as e:
-        logger.error(f"Initialization failed: {e}")
+    except (FileNotFoundError, NotADirectoryError) as init_file_error:
+        logger.error(f"Initialization failed: {init_file_error}")
         sys.exit(1)
-    except DockerComposeError as e:
-        logger.error(f"Docker Compose initialization failed: {e}")
+    except DockerComposeError as init_compose_error:
+        logger.error(f"Docker Compose initialization failed: {init_compose_error}")
         sys.exit(1)
-    except Exception as e:
-        logger.error(f"Unexpected error during initialization: {e}")
+    except Exception as init_error:
+        logger.error(f"Unexpected error during initialization: {init_error}")
         sys.exit(1)
 
     # Register signal handlers
@@ -582,8 +582,8 @@ async def main() -> None:
     # Run startup hook
     try:
         startup_hook()
-    except Exception as e:
-        logger.error(f"Startup failed: {e}")
+    except Exception as startup_error:
+        logger.error(f"Startup failed: {startup_error}")
         sys.exit(1)
 
     # Start MCP server
@@ -591,8 +591,8 @@ async def main() -> None:
     try:
         async with stdio_server() as (read_stream, write_stream):
             await server.run(read_stream, write_stream, server.create_initialization_options())
-    except Exception as e:
-        logger.error(f"MCP server error: {e}")
+    except Exception as server_error:
+        logger.error(f"MCP server error: {server_error}")
         sys.exit(1)
 
 
@@ -602,6 +602,6 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         logger.info("Received keyboard interrupt, shutting down...")
         sys.exit(0)
-    except Exception as e:
-        logger.error(f"Unexpected error: {e}")
+    except Exception as main_error:
+        logger.error(f"Unexpected error: {main_error}")
         sys.exit(1)
