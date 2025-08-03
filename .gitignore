@@ -62,3 +62,7 @@ logs/
 
 # MCP specific
 *.mcprc
+
+# Coverage
+.coverage
+.coverage.*
