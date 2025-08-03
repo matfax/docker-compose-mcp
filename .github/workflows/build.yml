@@ -42,7 +42,7 @@ jobs:
   test:
     name: Test on Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
-    environment: test
+    environment: tests
     strategy:
       matrix:
         python-version: ['3.11', '3.12', '3.13']
@@ -75,7 +75,7 @@ jobs:
   coverage:
     name: Coverage Tests
     runs-on: ubuntu-latest
-    environment: test
+    environment: tests
     permissions:
       contents: read
       id-token: write
