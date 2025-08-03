@@ -88,9 +88,7 @@ class DockerComposeManager:
             except Exception as e:
                 logger.warning(f"Failed to load environment from {env_file}: {e}")
 
-    def _run_compose_command(
-        self, command: list[str], timeout: float = 60.0
-    ) -> subprocess.CompletedProcess[str]:
+    def _run_compose_command(self, command: list[str], timeout: float = 60.0) -> subprocess.CompletedProcess[str]:
         """Securely run a Docker Compose command with proper validation.
 
         Args:
@@ -132,13 +130,9 @@ class DockerComposeManager:
                 env=dict(os.environ),  # Use clean environment copy
             )
         except subprocess.TimeoutExpired as e:
-            raise DockerComposeError(
-                f"Command timed out after {timeout}s: {' '.join(command)}"
-            ) from e
+            raise DockerComposeError(f"Command timed out after {timeout}s: {' '.join(command)}") from e
         except subprocess.CalledProcessError as e:
-            raise DockerComposeError(
-                f"Command failed: {e.stderr or e.stdout or 'Unknown error'}"
-            ) from e
+            raise DockerComposeError(f"Command failed: {e.stderr or e.stdout or 'Unknown error'}") from e
         except Exception as e:
             raise DockerComposeError(f"Unexpected error running command: {e}") from e
 
@@ -306,9 +300,7 @@ async def list_tools() -> list[Tool]:
                 "properties": {
                     "service": {
                         "type": "string",
-                        "description": (
-                            "Specific service name (optional, gets all services if not specified)"
-                        ),
+                        "description": ("Specific service name (optional, gets all services if not specified)"),
                     },
                     "tail": {
                         "type": "integer",
@@ -348,11 +340,7 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> list[TextContent]:
     try:
         if name == "get_compose_status":
             status = compose_manager.get_compose_status()
-            return [
-                TextContent(
-                    type="text", text=f"Docker Compose Status:\n\n{format_status_output(status)}"
-                )
-            ]
+            return [TextContent(type="text", text=f"Docker Compose Status:\n\n{format_status_output(status)}")]
 
         if name == "get_compose_logs":
             service = arguments.get("service")
@@ -535,7 +523,7 @@ async def main() -> None:
 
     # Configure logging based on debug flag and log level
     log_level = getattr(logging, args.log_level, logging.INFO)
-    
+
     if args.debug:
         # Enable stderr logging for debug mode
         logging.basicConfig(
@@ -553,15 +541,13 @@ async def main() -> None:
             handlers=[logging.NullHandler()],
             force=True,
         )
-    
+
     logging.getLogger().setLevel(log_level)
 
     # Initialize compose manager
     try:
         compose_manager = DockerComposeManager(args.project_dir, args.compose_file)
-        logger.info(
-            f"Initialized Docker Compose manager for project: {compose_manager.project_name}"
-        )
+        logger.info(f"Initialized Docker Compose manager for project: {compose_manager.project_name}")
     except (FileNotFoundError, NotADirectoryError) as e:
         logger.error(f"Initialization failed: {e}")
         sys.exit(1)
