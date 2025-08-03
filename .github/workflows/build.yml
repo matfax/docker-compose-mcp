@@ -107,7 +107,7 @@ jobs:
       run: uv run pytest --cov=docker_compose_mcp --cov-report=xml
 
     - name: Report test coverage to DeepSource
-      uses: deepsourcelabs/test-coverage-action@118eba80965c6dc4fffd2161ca0e673625e7d7f9 # oidc
+      uses: deepsourcelabs/test-coverage-action@oidc
       with:
         key: python
         coverage-file: coverage.xml
