@@ -67,3 +67,9 @@ logs/
 .coverage
 .coverage.*
 coverage.*
+
+# Aider
+.aider/
+.aider*/
+.aider.*
+.aider
