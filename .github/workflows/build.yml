@@ -45,7 +45,6 @@ jobs:
     environment: tests
     permissions:
       contents: read
-      id-token: write
 
     strategy:
       matrix:
@@ -74,13 +73,7 @@ jobs:
       run: uv sync --dev
 
     - name: Run tests
-      run: uv run pytest --junitxml=junit.xml -o junit_family=legacy
-
-    - name: Upload test results
-      uses: codecov/test-results-action@v1.1.1
-      with:
-        fail_ci_if_error: true
-        use_oidc: true
+      run: uv run pytest
 
   coverage:
     name: Coverage Tests
@@ -112,10 +105,10 @@ jobs:
 
     - name: Run tests with coverage
       run: uv run pytest --cov=docker_compose_mcp --cov-report=xml
-        
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@18283e04ce6e62d37312384ff67231eb8fd56d24 # v5.4.3
+
+    - name: Report test coverage to DeepSource
+      uses: deepsourcelabs/test-coverage-action@118eba80965c6dc4fffd2161ca0e673625e7d7f9 # oidc
       with:
-        fail_ci_if_error: true
-        use_oidc: true
-        report_type: coverage
+        key: python
+        coverage-file: coverage.xml
+        use-oidc: true
