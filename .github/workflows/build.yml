@@ -101,13 +101,16 @@ jobs:
       run: uv sync --dev
 
     - name: Run tests with coverage
-      run: uv run pytest --cov --cov-report=xml --junitxml=junit.xml -o junit_family=legacy
+      run: uv run pytest --cov --cov-report=xml
         
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@18283e04ce6e62d37312384ff67231eb8fd56d24 # v5.4.3
       with:
         fail_ci_if_error: true
         use_oidc: true
+
+    - name: Run tests with coverage
+      run: uv run pytest --cov --junitxml=junit.xml -o junit_family=legacy
 
     - name: Upload test results
       uses: codecov/test-results-action@v1.1.1
