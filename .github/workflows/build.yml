@@ -84,7 +84,7 @@ jobs:
         use_oidc: true
 
     - name: Upload test results
-      if: !cancelled() && matrix.python-version == '3.13'
+      if: ${{ !cancelled() && matrix.python-version == '3.13' }}
       uses: codecov/test-results-action@v1.1.1
       with:
         fail_ci_if_error: true
