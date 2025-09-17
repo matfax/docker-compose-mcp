@@ -10,36 +10,6 @@
 
 MCP server that provides lifecycle management for Docker Compose services with automatic startup, status monitoring, and graceful shutdown.
 
-## Quick Start
-
-```bash
-# 1. Navigate to your Docker Compose project
-cd /path/to/your/docker-compose-project
-
-# 2. Run the MCP server (auto-starts compose services)
-uv run --from git+https://github.com/matfax/docker-compose-mcp.git docker-compose-mcp .
-
-# 3. Server provides MCP tools for status/logs/restart
-# 4. Use Ctrl+C to stop (auto-runs docker-compose down)
-```
-
-## Installation
-
-```bash
-# Run directly from GitHub (recommended)
-uv run --from git+https://github.com/matfax/docker-compose-mcp.git docker-compose-mcp /path/to/project
-
-# Or install first
-uv pip install git+https://github.com/matfax/docker-compose-mcp.git
-docker-compose-mcp /path/to/project
-
-# Development setup
-git clone https://github.com/matfax/docker-compose-mcp.git
-cd docker-compose-mcp
-uv sync --dev
-uv run docker-compose-mcp /path/to/project
-```
-
 **Requirements**: Python (see .python-version), Docker, Docker Compose, uv
 
 ## CLI Options
