@@ -16,7 +16,6 @@
   "minimumReleaseAge": null,
   "internalChecksFilter": "strict",
   "osvVulnerabilityAlerts": true,
-  "vulnerabilityAlertsEnabled": true,
   "separateMinorPatch": false,
   "separateMajorMinor": true,
   "separateMultipleMajor": true,
